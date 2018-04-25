@@ -3,11 +3,66 @@
 namespace MifestaFileSystem;
 
 /**
- * Class FileSystem
+ * Class Filesystem
  * @package MifestaFileSystem
  */
 class FileSystem
 {
+    /**
+     * Get file stat
+     * @param string $filename
+     * @return array|bool
+     */
+    public function get_stat($filename)
+    {
+        $filename = $this->normalize($filename);
+        if (file_exists($filename)) {
+            return stat($filename);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get file content
+     * @param string $filename
+     * @return string|false
+     */
+    public function get_content($filename)
+    {
+        $filename = $this->normalize($filename);
+        if (file_exists($filename)) {
+            return file_get_contents($filename);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get file content
+     * @param string $filename
+     * @param mixed $data
+     * @return string|false
+     */
+    public function put_content($filename, $data)
+    {
+        $filename = $this->normalize($filename);
+        return file_put_contents($filename, $data);
+    }
+
+    /**
+     * Remove BOM
+     * @param string $string
+     * @return string
+     */
+    public function remove_bom($string)
+    {
+        if (is_string($string) && (substr($string, 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf))) {
+            $string = substr($string, 3);
+        }
+        return $string;
+    }
+
     /**
      * Normalize the given path. On Windows servers backslash will be replaced
      * with slash. Removes unnecessary double slashes and double dots. Removes
@@ -51,6 +106,10 @@ class FileSystem
     public function create_directory($directory_name = '')
     {
         $new_directory_name = rtrim($this->normalize($directory_name), '/');
-        return mkdir($new_directory_name, 0777, true);
+        if (file_exists($new_directory_name)) {
+            return false;
+        } else {
+            return mkdir($new_directory_name . '/', 0777, true);
+        }
     }
 }
