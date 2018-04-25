@@ -3,7 +3,7 @@
 namespace MifestaFileSystem;
 
 /**
- * Class Filesystem
+ * Class FileSystem
  * @package MifestaFileSystem
  */
 class FileSystem
