@@ -9,6 +9,36 @@ namespace MifestaFileSystem;
 class FileSystem
 {
     /**
+     * Remove BOM
+     * @param string $string
+     * @return string
+     */
+    public function remove_bom($string)
+    {
+        if (is_string($string) && (substr($string, 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf))) {
+            $string = substr($string, 3);
+        }
+        return $string;
+    }
+    /************************************************************
+     * FILES                                                    *
+     ************************************************************/
+    /**
+     * Get file content
+     * @param string $filename
+     * @return string|false
+     */
+    public function get_content($filename)
+    {
+        $filename = $this->normalize($filename);
+        if (file_exists($filename)) {
+            return file_get_contents($filename);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Get file stat
      * @param string $filename
      * @return array|bool
@@ -26,21 +56,6 @@ class FileSystem
     /**
      * Get file content
      * @param string $filename
-     * @return string|false
-     */
-    public function get_content($filename)
-    {
-        $filename = $this->normalize($filename);
-        if (file_exists($filename)) {
-            return file_get_contents($filename);
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Get file content
-     * @param string $filename
      * @param mixed $data
      * @return string|false
      */
@@ -48,19 +63,6 @@ class FileSystem
     {
         $filename = $this->normalize($filename);
         return file_put_contents($filename, $data);
-    }
-
-    /**
-     * Remove BOM
-     * @param string $string
-     * @return string
-     */
-    public function remove_bom($string)
-    {
-        if (is_string($string) && (substr($string, 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf))) {
-            $string = substr($string, 3);
-        }
-        return $string;
     }
 
     /**
@@ -96,7 +98,9 @@ class FileSystem
         $path = substr($path, 1);
         return $path;
     }
-
+    /************************************************************
+     * DIRECTORY                                                    *
+     ************************************************************/
     /**
      * Create directory
      * @param string $directory_name
